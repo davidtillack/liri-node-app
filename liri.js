@@ -44,6 +44,26 @@ function twitterRequest() {
 	});
 }
 
+// OMDB API Requests ================================================================================
+function OMDBRequest(val){
+    if (!error) {
+        
+         
+    }   else {
+        return;
+    }
+}
+
+
+// Spotify API Requests ================================================================================
+function spotifyRequest(){
+    if (!error) {
+         
+    }   else {
+        return;
+    }
+}
+
 // Run the requests appropriately if user's input matches
 if (liriRequest === "my-tweets") {
     twitterRequest();

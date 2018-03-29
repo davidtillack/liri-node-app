@@ -48,14 +48,14 @@ function twitterRequest() {
 }
 
 // Capture user input (after / including the third word) for the movie / spotify
-for (var i = 3; i < process.argv.length; i++) {
-  userInput = process.argv[i];
+for (var i = 4; i < process.argv.length; i++) {
+  userInput += process.argv[i];
 }
 
 // OMDB API Requests ================================================================================
 function OMDBRequest(userInput) {
   if (userInput === "") {
-    userInput = "Drive";
+    userInput = "Mr. Nobody";
   }
 
   var apiKey = "trilogy";
@@ -66,9 +66,7 @@ function OMDBRequest(userInput) {
     "&plot=full&tomatoes=true&apikey=" +
     apiKey;
 
-  console.log(userInput);
-
-  Request(OMDBQURL, function(error, data, body) {
+  Request(OMDBQURL, function(error, response, body) {
     if (!error) {
       console.log("");
       console.log("----------------------");
@@ -100,10 +98,48 @@ function OMDBRequest(userInput) {
 
 // Spotify API Requests ================================================================================
 function spotifyRequest(userInput) {
-  if (!error) {
-  } else {
-    return;
+  if (userInput === "") {
+    userInput = "The Sign";
   }
+
+  var spotify = new Spotify(keys.spotify);
+
+  spotify.search({ type: "track", query: userInput }, function(
+    error,
+    response
+  ) {
+    if (!error) {
+      var spotifySong = response.tracks.items[0];
+      console.log("");
+      console.log("----------------------");
+      console.log("artists(s): " + spotifySong.artists[0].name);
+      console.log("song name: " + spotifySong.name);
+      console.log("preview song: " + spotifySong.preview_url);
+      console.log("album: " + spotifySong.album.name);
+      console.log("----------------------");
+      console.log("");
+    } else {
+      console.log(
+        "Erm... Lets say something went wrong here. Try again, perhaps different song?"
+      );
+      return;
+    }
+  });
+}
+
+function dwis() {
+  fs.readFile("./random.txt", "UTF-8", function(error, response) {
+    if (!error) {
+      var array = response.split(",");
+      console.log("");
+      console.log(array[1]);
+      spotifyRequest(array[1]);
+      console.log("");
+    } else {
+      console.log(error);
+      return;
+    }
+  });
 }
 
 // Run the requests appropriately if user's input matches
@@ -111,6 +147,10 @@ if (liriRequest === "my-tweets") {
   twitterRequest();
 } else if (liriRequest === "movie-this") {
   OMDBRequest(userInput);
+} else if (liriRequest === "spotify-this-song") {
+  spotifyRequest(userInput);
+} else if (liriRequest === "do-what-it-says") {
+  dwis();
 } else {
   console.log("");
   console.log(
@@ -119,5 +159,6 @@ if (liriRequest === "my-tweets") {
   console.log("my-tweets");
   console.log("movie-this");
   console.log("spotify-this-song");
+  console.log("do-what-it-says");
   console.log("");
 }
